@@ -1,5 +1,5 @@
 # homebridge-gpio-electic-rim-lock
-Homebridge plugin to open electric rim locks via Raspberry Pi GPIO pins
+Homebridge plugin to open electric rim locks via Raspberry Pi GPIO pins.
 
 # Circuit
 
@@ -17,7 +17,7 @@ sudo npm install -g homebridge-gpio-electic-rim-lock --unsafe-perm
 
 # Configuration
 
-You will need to add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json)
+You will need to add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json).
 
 Configuration sample:
 
@@ -46,6 +46,6 @@ Configuration sample:
 
 Fields: 
 
-* name - Can be anything (required)
-* pin - The physical GPIO pin number that controls the relay (required)
-* duratin - Number of milliseconds to trigger the relay. Defaults to 1000 millseconds (1 second) if not specified
+* name - Can be anything (required).
+* pin - The physical GPIO pin number that controls the relay (required).
+* duratin - Number of milliseconds to trigger the relay. Defaults to 1000 millseconds (1 second) if not specified.
