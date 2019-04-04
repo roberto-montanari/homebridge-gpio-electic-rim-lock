@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/roberto-montanari/homebridge-rasppi-gpio-garagedoor/issues"
   },
-  "homepage": "https://github.com/roberto-montanari/homebridge-rasppi-gpio-garagedoor#readme"
+  "homepage": "https://github.com/roberto-montanari/homebridge-rasppi-gpio-garagedoor#readme",
   "engines": {
     "node": ">=0.12.0",
     "homebridge": ">=0.2.0"
