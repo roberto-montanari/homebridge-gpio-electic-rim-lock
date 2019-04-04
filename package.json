@@ -11,7 +11,9 @@
     "url": "git+https://github.com/roberto-montanari/homebridge-gpio-electic-rim-lock.git"
   },
   "keywords": [
-    "homebridge-plugin"
+    "homebridge-plugin",
+    "electic rim lock",
+    "tiro"
   ],
   "author": "Roberto Montanari",
   "license": "MIT",
