@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/roberto-montanari/homebridge-gpio-electic-rim-lock/issues"
   },
-  "homepage": "https://github.com/roberto-montanari/homebridge-gpio-electic-rim-lock#readme"
+  "homepage": "https://github.com/roberto-montanari/homebridge-gpio-electic-rim-lock#readme",
   "engines": {
     "node": ">=0.12.0",
     "homebridge": ">=0.2.0"
