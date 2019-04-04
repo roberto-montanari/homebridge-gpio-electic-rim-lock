@@ -6,18 +6,18 @@ module.exports = function(homebridge) {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
 	
-    homebridge.registerAccessory('homebridge-gpio-electic-rim-lock', 'Tiro', ElecticRimLockAccessory);	
+	homebridge.registerAccessory('homebridge-gpio-electic-rim-lock', 'Tiro', ElecticRimLockAccessory);	
 }
 
 function ElecticRimLockAccessory(log, config) {
-    this.log = log;
-    this.name = config['name'];
-    this.pin = config['pin'];
-    this.duration = config['duration'];
+	this.log = log;
+	this.name = config['name'];
+	this.pin = config['pin'];
+	this.duration = config['duration'];
 	this.lastLockTargetState = 1;
 
-    if (!this.pin) throw new Error("You must provide a config value for pin.");
-    if (this.duration == null || this.duration % 1 != 0) this.duration = 1000;
+	if (!this.pin) throw new Error("You must provide a config value for pin.");
+	if (this.duration == null || this.duration % 1 != 0) this.duration = 1000;
 }
 
 ElecticRimLockAccessory.prototype = {
@@ -39,8 +39,8 @@ ElecticRimLockAccessory.prototype = {
     			.on('set', this.setLockTargetState.bind(this));
 
 		this.informationService = informationService;
-    	this.lockMechanismService = lockMechanismService;
-    			
+		this.lockMechanismService = lockMechanismService;
+		
 		return [informationService, lockMechanismService];
 	},
 
@@ -75,9 +75,9 @@ ElecticRimLockAccessory.prototype = {
 		}						
 	},
 
-	writePin: function(val) {
-        this.log("Turning " + (val == 0 ? "off" : "on") + " pin #" + this.pin);
-        rpio.open(this.pin, rpio.OUTPUT);
-        rpio.write(this.pin, val == 0 ? rpio.LOW : rpio.HIGH);
+	writePin: function(val) {	
+		this.log("Turning " + (val == 0 ? "off" : "on") + " pin #" + this.pin);
+		rpio.open(this.pin, rpio.OUTPUT);
+		rpio.write(this.pin, val == 0 ? rpio.LOW : rpio.HIGH);
 	}
 }
