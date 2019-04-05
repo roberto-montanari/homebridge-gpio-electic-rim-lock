@@ -35,7 +35,7 @@ Configuration sample:
                 "accessory": "Tiro",
                 "name": "Door",
                 "pin": 12,
-                "duration": 4000
+                "duration": 500
         }
     ],
 
