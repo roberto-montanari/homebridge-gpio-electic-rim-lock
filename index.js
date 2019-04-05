@@ -24,20 +24,19 @@ ElecticRimLockAccessory.prototype = {
   
 	getServices: function() {	
 		let informationService = new Service.AccessoryInformation();
-    	informationService
-    		.setCharacteristic(Characteristic.Manufacturer, "Roberto Montanari")
-		.setCharacteristic(Characteristic.Model, "Tiro GPIO")
-		.setCharacteristic(Characteristic.SerialNumber, "000-000-0"+this.pin)
-		.setCharacteristic(Characteristic.FirmwareRevision, packageJson.version);
+		informationService
+    			.setCharacteristic(Characteristic.Manufacturer, "Roberto Montanari")
+			.setCharacteristic(Characteristic.Model, "Tiro GPIO")
+			.setCharacteristic(Characteristic.SerialNumber, "000-000-0"+this.pin);
 
 		let lockMechanismService = new Service.LockMechanism(this.name);
 		lockMechanismService
-    		.getCharacteristic(Characteristic.LockCurrentState)
-    			.on('get', this.getLockCurrentState.bind(this));		
+    			.getCharacteristic(Characteristic.LockCurrentState)
+    				.on('get', this.getLockCurrentState.bind(this));		
 		lockMechanismService
-    		.getCharacteristic(Characteristic.LockTargetState)
-    			.on('get', this.getLockTargetState.bind(this))
-    			.on('set', this.setLockTargetState.bind(this));
+    			.getCharacteristic(Characteristic.LockTargetState)
+    				.on('get', this.getLockTargetState.bind(this))
+    				.on('set', this.setLockTargetState.bind(this));
 
 		this.informationService = informationService;
 		this.lockMechanismService = lockMechanismService;
