@@ -25,9 +25,9 @@ ElecticRimLockAccessory.prototype = {
 	getServices: function() {	
 		let informationService = new Service.AccessoryInformation();
     	informationService
-    		.setCharacteristic(Characteristic.Manufacturer, "Muntaner's Technology")
-			.setCharacteristic(Characteristic.Model, "Tiro GPIO")
-			.setCharacteristic(Characteristic.SerialNumber, "000-000-0"+this.pin);
+    		.setCharacteristic(Characteristic.Manufacturer, "Roberto Montanari")
+		.setCharacteristic(Characteristic.Model, "Tiro GPIO")
+		.setCharacteristic(Characteristic.SerialNumber, "000-000-0"+this.pin);
 
 		let lockMechanismService = new Service.LockMechanism(this.name);
 		lockMechanismService
