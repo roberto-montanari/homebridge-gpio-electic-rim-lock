@@ -78,6 +78,6 @@ ElecticRimLockAccessory.prototype = {
 	writePin: function(val) {	
 		this.log("Turning " + (val == 0 ? "off" : "on") + " pin #" + this.pin);
 		rpio.open(this.pin, rpio.OUTPUT);
-		rpio.write(this.pin, val == 0 ? rpio.LOW : rpio.HIGH);
+		rpio.write(this.pin, val);
 	}
 }
