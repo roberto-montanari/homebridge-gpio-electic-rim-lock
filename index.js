@@ -5,7 +5,7 @@ var rpio = require('rpio');
 module.exports = function(homebridge) {
 	Service = homebridge.hap.Service;
 	Characteristic = homebridge.hap.Characteristic;
-	
+
 	homebridge.registerAccessory('homebridge-gpio-electic-rim-lock', 'Tiro', ElecticRimLockAccessory);	
 }
 
@@ -14,10 +14,14 @@ function ElecticRimLockAccessory(log, config) {
 	this.name = config['name'];
 	this.pin = config['pin'];
 	this.duration = config['duration'];
+	this.version = require('./package.json').version;
 	this.lastLockTargetState = 1;
 
 	if (!this.pin) throw new Error("You must provide a config value for pin.");
 	if (this.duration == null || this.duration % 1 != 0) this.duration = 1000;
+	this.log("Tiro GPIO version: " + this.version);
+	this.log("Switch pin: " + this.pin);
+	this.log("Active time: " + this.duration + "ms");
 }
 
 ElecticRimLockAccessory.prototype = {
@@ -27,7 +31,8 @@ ElecticRimLockAccessory.prototype = {
 		informationService
     			.setCharacteristic(Characteristic.Manufacturer, "Roberto Montanari")
 			.setCharacteristic(Characteristic.Model, "Tiro GPIO")
-			.setCharacteristic(Characteristic.SerialNumber, "000-000-0"+this.pin);
+			.setCharacteristic(Characteristic.SerialNumber, "000-0"+this.pin)
+			.setCharacteristic(Characteristic.FirmwareRevision, this.version);
 
 		let lockMechanismService = new Service.LockMechanism(this.name);
 		lockMechanismService
@@ -40,7 +45,7 @@ ElecticRimLockAccessory.prototype = {
 
 		this.informationService = informationService;
 		this.lockMechanismService = lockMechanismService;
-		
+
 		return [informationService, lockMechanismService];
 	},
 
