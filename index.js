@@ -25,7 +25,7 @@ function ElecticRimLockAccessory(log, config) {
 	this.lastLockTargetState = 1;
 
 	if (!this.pin) throw new Error("You must provide a config value for pin.");
-	if (this.duration == null || this.duration % 1 != 0) this.duration = 1000;
+	if (this.duration == null || this.duration % 1 != 0) this.duration = 500;
 	this.log("Tiro GPIO version: " + this.version);
 	this.log("Switch pin: " + this.pin);
 	this.log("Active time: " + this.duration + " ms");
