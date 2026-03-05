@@ -48,4 +48,4 @@ Fields:
 
 * name - Can be anything (required).
 * pin - The physical GPIO pin number that controls the relay (required).
-* duratin - Number of milliseconds to trigger the relay. Defaults to 1000 millseconds (1 second) if not specified.
+* duratin - Number of milliseconds to trigger the relay. Defaults to 500 millseconds (1 second) if not specified.
