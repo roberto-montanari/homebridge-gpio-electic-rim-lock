@@ -35,8 +35,8 @@
         "title": "Pulse duration (ms)",
         "type": "integer",
         "description": "Number of milliseconds to trigger the relay",
-        "default": 1000,
-        "minimum": 500,
+        "default": 500,
+        "minimum": 100,
         "maximum": 2000
       }
     }
