@@ -1,0 +1,44 @@
+{
+  "pluginAlias": "Tiro",config.schema.json
+  "pluginType": "accessory",
+  "singular": false,
+
+  "headerDisplay": "Homebridge plugin to open electric rim locks via Raspberry Pi GPIO pins.",
+  "footerDisplay": "For documentation, see the [plugin homepage](https://github.com/roberto-montanari/homebridge-gpio-electic-rim-lock) on GitHub.",
+
+  "schema": {
+    "type": "object",
+    "required": [
+      "name",
+      "pin",
+      "duration"
+    ],
+    "properties": {
+
+      "name": {
+        "title": "Door name",
+        "type": "string",
+        "description": "Door name visible in HomeKit",
+        "minLength": 1
+      },
+
+      "pin": {
+        "title": "GPIO pin number",
+        "type": "integer",
+        "description": "The physical GPIO pin number that controls the relay",
+        "enum": [
+          11, 12, 13, 15
+        ]
+      },
+
+      "duration": {
+        "title": "Pulse duration (ms)",
+        "type": "integer",
+        "description": "Number of milliseconds to trigger the relay",
+        "default": 1000,
+        "minimum": 500,
+        "maximum": 2000
+      }
+    }
+  }
+}
