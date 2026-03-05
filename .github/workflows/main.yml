@@ -28,3 +28,6 @@ jobs:
         run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Log published version
+        run: npm view $(jq -r .name package.json) version
