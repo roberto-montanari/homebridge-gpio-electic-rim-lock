@@ -30,10 +30,7 @@ The plugin provides a full configuration UI. Navigate to Plugins → Settings fo
 
 ### Manual Configuration
 
-Add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json).
-
-Configuration sample:
-
+Add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json):
 ```JSON
 
 {
