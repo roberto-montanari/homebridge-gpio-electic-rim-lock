@@ -11,10 +11,10 @@ This plugin assumes that you are using a Raspberry Pi to directly control your e
 
 ### Via Homebridge UI (Recommended)
 
-    Open the Homebridge UI
-    Navigate to Plugins
-    Search for "@sealad886/homebridge-blink-cameras-new-api"
-    Click Install
+1. Open the Homebridge UI
+2. Navigate to Plugins
+3. Search for "homebridge-gpio-electic-rim-lock"
+4. Click Install
 
 ### Via npm
 ```
@@ -24,35 +24,33 @@ Restart Homebridge after installing.
 
 ## Configuration
 
-You will need to add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json).
+### Via Homebridge UI
+
+The plugin provides a full configuration UI. Navigate to Plugins → Settings for Homebridge Gpio Electic Rim Lock.
+
+### Manual Configuration
+
+Add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json).
 
 Configuration sample:
 
 ```JSON
-{
-    "bridge": {
-        "name": "Raspberry Pi 2",
-        "username": "CC:22:3D:E3:CE:32",
-        "port": 51826,
-        "pin": "031-45-154"
-    },
 
+{
     "accessories": [
         {
-                "accessory": "Tiro",
-                "name": "Door",
-                "pin": 12,
-                "duration": 500
+            "accessory": "Tiro",
+            "name": "Door",
+            "pin": 12,
+            "duration": 500
         }
-    ],
-
-    "platforms": []
+    ]
 }
 
 ```
 
 Fields: 
 
-* name - Can be anything (required).
+* name - The door name visible in HomeKit, can be anything (required).
 * pin - The physical GPIO pin number that controls the relay (required).
-* duratin - Number of milliseconds to trigger the relay. Defaults to 500 millseconds (1 second) if not specified.
+* duratin - Number of milliseconds to trigger the relay. Defaults to 500 millseconds (0,5 second) if not specified.
