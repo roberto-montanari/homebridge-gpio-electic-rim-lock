@@ -9,14 +9,14 @@ This plugin assumes that you are using a Raspberry Pi to directly control your e
 
 ## Installation
 
-# Via Homebridge UI (Recommended)
+### Via Homebridge UI (Recommended)
 
     Open the Homebridge UI
     Navigate to Plugins
     Search for "@sealad886/homebridge-blink-cameras-new-api"
     Click Install
 
-# Via npm
+### Via npm
 ```
 sudo npm install -g homebridge-gpio-electic-rim-lock --unsafe-perm
 ```
