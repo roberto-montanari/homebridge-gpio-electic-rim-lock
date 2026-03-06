@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "Tiro",config.schema.json
+  "pluginAlias": "Tiro",
   "pluginType": "accessory",
   "singular": false,
 
