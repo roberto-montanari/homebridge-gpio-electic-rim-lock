@@ -51,3 +51,8 @@ Fields:
 * name - The door name visible in HomeKit, can be anything (required).
 * pin - The physical GPIO pin number that controls the relay (required).
 * duratin - Number of milliseconds to trigger the relay. Defaults to 500 millseconds (0,5 second) if not specified.
+
+## Compatibility
+
+This plugin is designed to run **only on Raspberry Pi** hardware because it uses the `rpio` library for GPIO access. 
+It **will not work on other Linux systems** or in Docker containers without GPIO support.  
