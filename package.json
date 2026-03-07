@@ -12,6 +12,8 @@
   },
   "keywords": [
     "homebridge-plugin",
+    "homebridge-gpio",
+    "raspberry-pi-only",
     "homebridge",
     "homekit",
     "smart home",
