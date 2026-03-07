@@ -1,6 +1,5 @@
 {
   "pluginAlias": "Tiro",
-  "description": "⚠ This plugin works only on Raspberry Pi.",
   "pluginType": "accessory",
   "singular": false,
 
@@ -9,6 +8,7 @@
 
   "schema": {
     "type": "object",
+    "description": "⚠ This plugin works only on Raspberry Pi.",
     "required": [
       "name",
       "pin",
