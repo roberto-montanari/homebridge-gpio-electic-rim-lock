@@ -11,9 +11,9 @@ module.exports = function(homebridge) {
 
 function getSerial(){
 	var fs = require('fs');
-	var content = fs.readFileSync('/proc/cpuinfo', 'utf8').split("\n");	
-	var serial = content[content.length-2].split(":");
-	return serial[1].slice(9);
+  	var cpuinfo = fs.readFileSync('/proc/cpuinfo', 'utf8');
+  	var match = cpuinfo.match(/Serial\s*:\s*([a-f0-9]+)/i);
+  	return match ? match[1] : null;
 }
 
 function ElecticRimLockAccessory(log, config) {
