@@ -2,6 +2,7 @@
 
 var Service, Characteristic;
 var rpio = require('rpio');
+var os = require('os');
 
 module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
@@ -34,6 +35,11 @@ function ElecticRimLockAccessory(log, config) {
         this.log.warn("⚠ RimLock not configured correctly: name or pin missing. Plugin is disabled.");
         this.disabled = true;
         return;
+    }
+
+    // Warn if not running on Raspberry Pi
+    if (os.arch() !== 'arm') {
+        this.log.warn("⚠ This plugin is intended to run only on Raspberry Pi. Some features may not work.");
     }
 
     if (this.duration == null || this.duration % 1 !== 0) this.duration = 500;
