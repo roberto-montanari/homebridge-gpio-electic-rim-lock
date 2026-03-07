@@ -24,7 +24,11 @@ function ElecticRimLockAccessory(log, config) {
 	this.version = require('./package.json').version;
 	this.lastLockTargetState = 1;
 
-	if (!this.pin) throw new Error("You must provide a config value for pin.");
+	if (!this.name || !this.pin) {
+		this.log.warn("You must provide a valid config value for name and pin.");
+		this.disabled = true;
+		return;
+	}
 	if (this.duration == null || this.duration % 1 != 0) this.duration = 500;
 	this.log("Tiro GPIO version: " + this.version);
 	this.log("Switch pin: " + this.pin);
