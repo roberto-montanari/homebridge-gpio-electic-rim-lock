@@ -18,7 +18,7 @@ This plugin assumes that you are using a Raspberry Pi to directly control your e
 
 ### Via npm
 ```
-sudo npm install -g homebridge-gpio-electic-rim-lock
+npm install -g homebridge-gpio-electic-rim-lock
 ```
 Restart Homebridge after installing.
 
