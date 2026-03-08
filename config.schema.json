@@ -8,7 +8,17 @@
 
   "schema": {
     "type": "object",
+    "required": ["name", "locks"],
     "properties": {
+    
+      "name": {
+        "title": "Name",
+        "type": "string",
+        "description": "Name of this platform in Homebridge",
+        "minLength": 1,
+        "default": "Tiro"
+      },    
+    
       "locks": {
         "title": "Locks configuration",
         "type": "array",
