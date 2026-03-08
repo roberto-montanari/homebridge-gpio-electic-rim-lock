@@ -1,4 +1,4 @@
-# homebridge-gpio-electic-rim-lock
+# homebridge-gpio-electric-rim-lock
 Homebridge plugin to open electric rim locks via Raspberry Pi GPIO pins.
 
 ## Compatibility
@@ -10,7 +10,7 @@ This plugin is designed to run **only on Raspberry Pi** hardware because it uses
 
 This plugin assumes that you are using a Raspberry Pi to directly control your electric rim locks. Electric rim locks usually have a switch on the wall that you can push to open the door. On my model, this is just a very simple switch that completes a 12vac circuit. The button must be pressed for about a second before the door will open. In order for this to be an effective electric rim locks opener, you need a relay that will perform the duty of the button.
 
-![Schematic](https://github.com/roberto-montanari/homebridge-gpio-electic-rim-lock/blob/master/images/schematic.png?raw=true)
+![Schematic](https://github.com/roberto-montanari/homebridge-gpio-electric-rim-lock/blob/master/images/schematic.png?raw=true)
 
 ## Installation
 
@@ -18,12 +18,12 @@ This plugin assumes that you are using a Raspberry Pi to directly control your e
 
 1. Open the Homebridge UI
 2. Navigate to Plugins
-3. Search for "homebridge-gpio-electic-rim-lock"
+3. Search for "homebridge-gpio-electric-rim-lock"
 4. Click Install
 
 ### Via npm
 ```
-npm install -g homebridge-gpio-electic-rim-lock
+npm install -g homebridge-gpio-electric-rim-lock
 ```
 Restart Homebridge after installing.
 
@@ -31,7 +31,7 @@ Restart Homebridge after installing.
 
 ### Via Homebridge UI
 
-The plugin provides a full configuration UI. Navigate to Plugins → Settings for Homebridge Gpio Electic Rim Lock.
+The plugin provides a full configuration UI. Navigate to Plugins → Settings for Homebridge Gpio Electric Rim Lock.
 
 ### Manual Configuration
 
