@@ -39,14 +39,15 @@ Add the following accessory configuration to the Homebridge [config.json](https:
 ```JSON
 
 {
-    "accessories": [
-        {
-            "accessory": "Tiro",
-            "name": "Door",
-            "pin": 12,
-            "duration": 500
-        }
-    ]
+  "platforms": [
+    {
+      "platform": "Tiro",
+      "locks": [
+        { "name": "Front Door", "pin": 11, "duration": 500 },
+        { "name": "Back Door", "pin": 12, "duration": 700 }
+      ]
+    }
+  ]
 }
 
 ```
