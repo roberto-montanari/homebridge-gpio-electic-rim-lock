@@ -9,9 +9,9 @@ module.exports = function(homebridge) {
     Characteristic = homebridge.hap.Characteristic;
 
     homebridge.registerAccessory(
-        'homebridge-gpio-electic-rim-lock',
+        'homebridge-gpio-electric-rim-lock',
         'Tiro',
-        ElecticRimLockAccessory
+        ElectricRimLockAccessory
     );
 };
 
@@ -22,7 +22,7 @@ function getSerial() {
     return match ? match[1] : null;
 }
 
-function ElecticRimLockAccessory(log, config) {
+function ElectricRimLockAccessory(log, config) {
     this.log = log;
     this.name = config['name'];
     this.pin = config['pin'];
@@ -49,7 +49,7 @@ function ElecticRimLockAccessory(log, config) {
     this.log("Active time: " + this.duration + " ms");
 }
 
-ElecticRimLockAccessory.prototype = {
+ElectricRimLockAccessory.prototype = {
 
     getServices: function() {
         if (this.disabled) {
