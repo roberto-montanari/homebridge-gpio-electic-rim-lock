@@ -1,59 +1,151 @@
 # homebridge-gpio-electric-rim-lock
-Homebridge plugin to open electric rim locks via Raspberry Pi GPIO pins.
+
+![npm version](https://img.shields.io/npm/v/homebridge-gpio-electric-rim-lock)
+![license](https://img.shields.io/npm/l/homebridge-gpio-electric-rim-lock)
+![Platform](https://img.shields.io/badge/platform-Raspberry%20Pi-red)
+
+Homebridge plugin to control **electric rim locks** using Raspberry Pi GPIO pins.
+This plugin allows you to open electric rim locks from **Apple HomeKit** by triggering a relay connected to a Raspberry Pi.
+
 
 ## Compatibility
 
-This plugin is designed to run **only on Raspberry Pi** hardware because it uses the `rpio` library for GPIO access. <br>
-⚠️ It **will not work on other Linux systems** or in Docker containers without GPIO support.  
+This plugin is designed to run **only on Raspberry Pi hardware** because it uses the `rpio` library to access GPIO pins.
 
-## Circuit
+⚠️ The plugin **will not work on**:
 
-This plugin assumes that you are using a Raspberry Pi to directly control your electric rim locks. Electric rim locks usually have a switch on the wall that you can push to open the door. On my model, this is just a very simple switch that completes a 12vac circuit. The button must be pressed for about a second before the door will open. In order for this to be an effective electric rim locks opener, you need a relay that will perform the duty of the button.
+- non-Raspberry Pi Linux systems
+- virtual machines
+- Docker containers without GPIO access
+
+
+## Hardware Setup
+
+This plugin assumes that the Raspberry Pi controls an **electric rim lock via a relay module**.
+
+Electric rim locks usually include a **wall button** that briefly closes a circuit to unlock the door.  
+On many systems this is a **12V AC circuit**.
+
+The Raspberry Pi **must not be connected directly to the lock**, therefore a **relay module** is required.
+
+When HomeKit sends the unlock command:
+
+1. the GPIO pin activates the relay
+2. the relay closes the circuit
+3. the door unlocks
+4. the relay is released after the configured delay
+
+
+## Circuit Diagram
 
 ![Schematic](https://github.com/roberto-montanari/homebridge-gpio-electric-rim-lock/blob/master/images/schematic.png?raw=true)
 
+
 ## Installation
 
-### Via Homebridge UI (Recommended)
+### Install via Homebridge UI (Recommended)
 
-1. Open the Homebridge UI
-2. Navigate to Plugins
-3. Search for "homebridge-gpio-electric-rim-lock"
-4. Click Install
+1. Open the **Homebridge UI**
+2. Navigate to **Plugins**
+3. Search for: ``` homebridge-gpio-electric-rim-lock ```
+4. Click **Install**
 
-### Via npm
+### Install via npm
+
 ```
 npm install -g homebridge-gpio-electric-rim-lock
 ```
-Restart Homebridge after installing.
+
+Restart **Homebridge** after installation.
+
 
 ## Configuration
 
-### Via Homebridge UI
+### Using the Homebridge UI
 
-The plugin provides a full configuration UI. Navigate to Plugins → Settings for Homebridge Gpio Electric Rim Lock.
+The plugin includes a configuration interface.
+
+Navigate to: Plugins → **Homebridge GPIO Electric Rim Lock** → Settings
 
 ### Manual Configuration
 
-Add the following accessory configuration to the Homebridge [config.json](https://github.com/nfarina/homebridge/blob/master/config-sample.json):
-```JSON
+Add the following to your Homebridge `config.json`.
 
+Example:
+
+```json
 {
   "platforms": [
     {
       "platform": "Tiro",
       "locks": [
-        { "name": "Front Door", "pin": 11, "duration": 500 },
-        { "name": "Back Door", "pin": 12, "duration": 700 }
+        {
+          "name": "Front Door",
+          "pin": 11,
+          "duration": 500
+        },
+        {
+          "name": "Back Door",
+          "pin": 12,
+          "duration": 700
+        }
       ]
     }
   ]
 }
-
 ```
 
-Fields: 
 
-* name - The door name visible in HomeKit, can be anything (required).
-* pin - The physical GPIO pin number that controls the relay (required).
-* duratin - Number of milliseconds to trigger the relay. Defaults to 500 millseconds (0,5 second) if not specified.
+## Configuration Options
+
+| Field | Required | Description |
+|------|------|------|
+| `name` | yes | Name of the lock shown in HomeKit |
+| `pin` | yes | Physical GPIO pin connected to the relay |
+| `duration` | no | Relay activation time in milliseconds (default **500 ms**) |
+
+
+## Troubleshooting
+
+### Plugin does not start
+
+Make sure Homebridge is running on a **Raspberry Pi**.
+
+You can verify this with:
+
+```
+cat /proc/cpuinfo
+```
+
+### Relay does not trigger
+
+Check:
+
+- correct GPIO **pin number**
+- relay module **power supply**
+- GPIO permissions
+
+### GPIO permission errors
+
+Run Homebridge with appropriate permissions or add the user to the `gpio` group.
+
+Example:
+
+```
+sudo usermod -aG gpio homebridge
+```
+
+Restart the system after changing group permissions.
+
+
+## Safety Notice
+
+This plugin controls **physical door locks**.
+
+Always ensure:
+
+- your wiring is correct
+- relay modules are properly isolated
+- the door can still be opened manually in case of failure
+
+The author is **not responsible for damage or security issues** caused by improper installation.
