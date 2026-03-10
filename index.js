@@ -1,99 +1,134 @@
 "use strict";
 
-var Service, Characteristic;
-var rpio = require('rpio');
-var fs = require('fs');
+const rpio = require("rpio");
+const fs = require("fs");
 
-module.exports = function(homebridge) {
-    Service = homebridge.hap.Service;
-    Characteristic = homebridge.hap.Characteristic;
+let Service;
+let Characteristic;
 
-    homebridge.registerPlatform(
-        'homebridge-gpio-electric-rim-lock',
-        'Tiro',
-        ElectricRimLockPlatform,
-        true // dynamic platform
-    );
-};
+// ======================
+// Get cpuinfo
+// ======================
 
-function getSerial() {
-    var fs = require('fs');
-    var cpuinfo = fs.readFileSync('/proc/cpuinfo', 'utf8');
-    var match = cpuinfo.match(/Serial\s*:\s*([a-f0-9]+)/i);
-    return match ? match[1] : null;
+let cpuinfo = "";
+try {
+	cpuinfo = fs.readFileSync("/proc/cpuinfo", "utf8");
+} catch {
+	cpuinfo = "";
 }
 
-// ==========================
-// Platform Class
-// ==========================
-function ElectricRimLockPlatform(log, config, api) {
+module.exports = (homebridge) => {
+  Service = homebridge.hap.Service;
+  Characteristic = homebridge.hap.Characteristic;
+
+  homebridge.registerPlatform(
+    "homebridge-gpio-electric-rim-lock",
+    "Tiro",
+    ElectricRimLockPlatform,
+    true
+  );
+};
+
+// ======================
+// Utility
+// ======================
+
+function getSerial() {
+	try {
+    	const match = cpuinfo.match(/Serial\s*:\s*([a-f0-9]+)/i);
+    	return match ? match[1] : "unknown";
+  	} catch {
+    	return "unknown";
+  	}
+}
+
+// ======================
+// Platform
+// ======================
+
+class ElectricRimLockPlatform {
+
+  constructor(log, config, api) {
     this.log = log;
     this.config = config;
     this.api = api;
     this.accessories = [];
+    this.initializedPins = new Set();
 
-    var that = this;
+    if (!config) return;
 
-    api.on('didFinishLaunching', function() {
-        that.log("Platform finished launching. Discovering devices...");
-        that.discoverDevices();
+    api.on("didFinishLaunching", () => {
+      this.log("Tiro platform ready");
+      this.discoverDevices();
     });
+  }
+
+  configureAccessory(accessory) {
+    this.accessories.push(accessory);
+  }
+
+  discoverDevices() {
+    const locks = this.config.locks || [];
+    locks.forEach(lock => {
+
+      if (!lock.name || lock.pin === undefined) {
+        this.log.warn("⚠ Lock missing name or pin, skipping.");
+        return;
+      }
+
+      const uuid = this.api.hap.uuid.generate("tiro-lock-" + lock.pin);
+      const existingAccessory = this.accessories.find(a => a.UUID === uuid);
+
+      if (existingAccessory) {
+        this.log("Restoring:", existingAccessory.displayName);
+        existingAccessory.context = lock;
+        new ElectricRimLockAccessory(this, existingAccessory);
+      } else {
+        this.log("Adding:", lock.name);
+        const accessory = new this.api.platformAccessory(lock.name, uuid);
+        accessory.category = this.api.hap.Categories.DOOR_LOCK;
+        accessory.context = lock;
+        new ElectricRimLockAccessory(this, accessory);
+        this.api.registerPlatformAccessories(
+          "homebridge-gpio-electric-rim-lock",
+          "Tiro",
+          [accessory]
+        );
+      }
+
+    });
+  }
+
+  initPin(pin) {
+
+    if (this.initializedPins.has(pin)) return;
+  
+    rpio.open(pin, rpio.OUTPUT, rpio.LOW);
+  
+  	this.initializedPins.add(pin);
+    this.log("GPIO initialized:", pin);
+  }
 }
 
-ElectricRimLockPlatform.prototype = {
-    configureAccessory: function(accessory) {
-        this.accessories.push(accessory);
-    },
+// ======================
+// Accessory
+// ======================
 
-    discoverDevices: function() {
-        var locks = this.config.locks || [];
+class ElectricRimLockAccessory {
 
-        if (!locks.length) {
-            this.log.warn("⚠ No locks configured in the 'locks' array.");
-            return;
-        }
+  constructor(platform, accessory) {
 
-        var that = this;
-
-        locks.forEach(function(lockConfig) {
-            if (!lockConfig.name || !lockConfig.pin) {
-                that.log.warn("⚠ Lock missing name or pin, skipping.");
-                return;
-            }
-
-            var uuid = that.api.hap.uuid.generate("gpio-rim-lock-" + lockConfig.pin);
-
-            var accessory = new that.api.platformAccessory(lockConfig.name, uuid);
-            accessory.context.pin = lockConfig.pin;
-
-            that.api.registerPlatformAccessories(
-                'homebridge-gpio-electric-rim-lock',
-                'Tiro',
-                [accessory]
-            );
-
-            new ElectricRimLockAccessory(that.log, lockConfig, that.api, accessory);
-        });
-    }
-};
-
-// ==========================
-// Accessory Class
-// ==========================
-function ElectricRimLockAccessory(log, config, api, accessory) {
-    this.log = log;
-    this.config = config;
-    this.api = api;
+    this.platform = platform;
+    this.log = platform.log;
     this.accessory = accessory;
 
-    this.Service = api.hap.Service;
-    this.Characteristic = api.hap.Characteristic;
+    const config = accessory.context;
 
-    this.name = config['name'];
-    this.pin = config['pin'];
-    this.duration = config['duration'];
-    this.version = require('./package.json').version;
-    this.lastLockTargetState = 1;
+    this.name = config.name;
+    this.pin = config.pin;
+    this.duration = config.duration || 500;
+    this.version = require("./package.json").version;
+    this.busy = false;
 
     if (!this.name || !this.pin) {
         this.log.warn("⚠ RimLock not configured correctly: name or pin missing. Plugin disabled.");
@@ -101,91 +136,62 @@ function ElectricRimLockAccessory(log, config, api, accessory) {
         return;
     }
 
-	var cpuinfo = fs.readFileSync('/proc/cpuinfo', 'utf8');
 	if (!/Raspberry Pi/i.test(cpuinfo)) {
         this.log.warn("⚠ This plugin is intended to run only on Raspberry Pi.  Some features may not work.");
     }
+    
+    platform.initPin(this.pin);
 
-    if (this.duration == null || this.duration % 1 !== 0) this.duration = 500;
+    this.setupInfoService();
+    this.setupLockService();
+  }
 
-    this.log("Tiro GPIO version: " + this.version);
-    this.log("Switch pin: " + this.pin);
-    this.log("Active time: " + this.duration + " ms");
+  setupInfoService() {
 
-    // Register services
-    this.informationService = new this.Service.AccessoryInformation();
-    this.informationService
-        .setCharacteristic(this.Characteristic.Manufacturer, "Roberto Montanari")
-        .setCharacteristic(this.Characteristic.Model, "Tiro GPIO")
-        .setCharacteristic(this.Characteristic.SerialNumber, getSerial() + this.pin)
-        .setCharacteristic(this.Characteristic.FirmwareRevision, this.version);
+    const info =
+      this.accessory.getService(Service.AccessoryInformation) ||
+      this.accessory.addService(Service.AccessoryInformation);
 
-    this.lockMechanismService =
-        accessory.getService(this.Service.LockMechanism) ||
-        accessory.addService(this.Service.LockMechanism, this.name);
+    info
+      .setCharacteristic(Characteristic.Manufacturer, "Roberto Montanari")
+      .setCharacteristic(Characteristic.Model, "Tiro GPIO")
+      .setCharacteristic(Characteristic.SerialNumber, getSerial() + "-" + this.pin)
+      .setCharacteristic(Characteristic.FirmwareRevision, this.version);
+  }
 
-    var that = this;
+  setupLockService() {
 
-    this.lockMechanismService
-        .getCharacteristic(this.Characteristic.LockCurrentState)
-        .on('get', function(callback) { that.getLockCurrentState(callback); });
+    this.lockService =
+      this.accessory.getService(Service.LockMechanism) ||
+      this.accessory.addService(Service.LockMechanism, this.name);
 
-    this.lockMechanismService
-        .getCharacteristic(this.Characteristic.LockTargetState)
-        .on('get', function(callback) { that.getLockTargetState(callback); })
-        .on('set', function(state, callback) { that.setLockTargetState(state, callback); });
-}
+    this.lockService
+      .getCharacteristic(Characteristic.LockCurrentState)
+      .onGet(() => 1);
 
-ElectricRimLockAccessory.prototype = {
+    this.lockService
+      .getCharacteristic(Characteristic.LockTargetState)
+      .onGet(() => 1)
+      .onSet((state) => this.setLock(state));
+  }
 
-    getLockCurrentState: function(callback) {
-        if (this.lastLockTargetState === 0) {
-            this.lastLockTargetState = 1;
-            callback(null, 0);
-        } else {
-            callback(null, 1);
-        }
-    },
-
-    getLockTargetState: function(callback) {
-        this.lastLockTargetState = 1;
-        callback(null, 1);
-    },
-
-    setLockTargetState: function(state, callback) {
-        if (this.disabled) {
-            this.log.warn("Plugin disabled, command ignored.");
-            return callback(null);
-        }
-
-        if (state === 0) { // Unlock
-            this.writePin(1);
-            this.log("Waiting for " + this.duration + " ms");
-            setTimeout(() => this.writePin(0), this.duration);
-            this.log("Lock state set to OPEN");
-            this.lastLockTargetState = 0;
-            callback(null);
-        } else { // Lock
-            this.writePin(0);
-            this.log("Lock state set to CLOSED");
-            this.lastLockTargetState = 1;
-            callback(null);
-        }
-    },
-
-    writePin: function(val) {
-        if (this.disabled) return;
-
-        try {
-            rpio.open(this.pin, rpio.OUTPUT, rpio.LOW);
-            rpio.write(this.pin, val);
-            this.log("GPIO pin " + this.pin + " set " + (val === 0 ? "OFF" : "ON"));
-        } catch (err) {
-            this.log.error("GPIO error on pin " + this.pin + ": " + err.message);
-        }
-    },
-
-    getServices: function() {
-        return this.disabled ? [] : [this.informationService, this.lockMechanismService];
+  async setLock(state) {
+    if (this.busy) {
+      this.log("Ignored double trigger:", this.name);
+      return;
     }
-};
+
+    if (state === 0) {
+      this.busy = true;
+      this.log("Unlock:", this.name);
+      rpio.write(this.pin, 1);
+      setTimeout(() => {
+        rpio.write(this.pin, 0);
+        this.busy = false;
+      }, this.duration);
+    } else {
+      rpio.write(this.pin, 0);
+      this.log("Locked:", this.name);
+    }
+  }
+}
