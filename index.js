@@ -3,19 +3,8 @@
 const rpio = require("rpio");
 const fs = require("fs");
 
-let Service;
-let Characteristic;
-
-// ======================
-// Get cpuinfo
-// ======================
-
-let cpuinfo = "";
-try {
-	cpuinfo = fs.readFileSync("/proc/cpuinfo", "utf8");
-} catch {
-	cpuinfo = "";
-}
+let Service, Characteristic;
+const cpuInfoCache = fs.readFileSync("/proc/cpuinfo", "utf8");
 
 module.exports = (homebridge) => {
   Service = homebridge.hap.Service;
@@ -29,23 +18,17 @@ module.exports = (homebridge) => {
   );
 };
 
-// ======================
-// Utility
-// ======================
-
+// Get Raspberry Pi serial number
 function getSerial() {
-	try {
-    	const match = cpuinfo.match(/Serial\s*:\s*([a-f0-9]+)/i);
-    	return match ? match[1] : "unknown";
-  	} catch {
-    	return "unknown";
-  	}
+  try {
+    const serialLine = cpuInfoCache.split("\n").find((line) => line.startsWith("Serial"));
+    return serialLine ? serialLine.split(":")[1].trim() : "UNKNOWN";
+  } catch {
+    return "UNKNOWN";
+  }
 }
 
-// ======================
-// Platform
-// ======================
-
+// Platform class
 class ElectricRimLockPlatform {
 
   constructor(log, config, api) {
@@ -110,14 +93,10 @@ class ElectricRimLockPlatform {
   }
 }
 
-// ======================
-// Accessory
-// ======================
-
+// Electric Rim Lock Accessory
 class ElectricRimLockAccessory {
-
   constructor(platform, accessory) {
-
+  
     this.platform = platform;
     this.log = platform.log;
     this.accessory = accessory;
@@ -130,15 +109,17 @@ class ElectricRimLockAccessory {
     this.version = require("./package.json").version;
     this.busy = false;
 
+    // Validate name and pin
     if (!this.name || !this.pin) {
         this.log.warn("⚠ RimLock not configured correctly: name or pin missing. Plugin disabled.");
         this.disabled = true;
         return;
     }
 
-	if (!/Raspberry Pi/i.test(cpuinfo)) {
-        this.log.warn("⚠ This plugin is intended to run only on Raspberry Pi.  Some features may not work.");
-    }
+    // Raspberry Pi check
+    if (!/Raspberry Pi/i.test(cpuInfoCache)) {
+      this.log.warn("⚠ This plugin is intended for Raspberry Pi. Some features may not work.");
+    }  
     
     platform.initPin(this.pin);
 
